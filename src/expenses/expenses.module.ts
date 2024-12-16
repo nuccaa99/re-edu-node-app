@@ -6,4 +6,4 @@ import { ExpensesService } from './expenses.service';
   controllers: [ExpensesController],
   providers: [ExpensesService],
 })
-export class UsersModule {}
+export class ExpensesModule {}
