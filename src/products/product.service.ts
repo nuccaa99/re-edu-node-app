@@ -1,9 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { AddProductDto } from './DTOs/add-product.dto';
 import { UpdateProductDto } from './DTOs/update-product.dto';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ProductsService {
+  constructor(private UsersService: UsersService) {}
   private products = {
     ka: [
       {
@@ -39,7 +41,11 @@ export class ProductsService {
     ],
   };
 
-  getAllProducts(productFilters: UpdateProductDto, lang: 'ka' | 'en') {
+  getAllProducts(
+    productFilters: UpdateProductDto,
+    lang: 'ka' | 'en',
+    userId: number,
+  ) {
     let filteredProducts = this.products[lang];
     if (productFilters.category) {
       filteredProducts = filteredProducts.filter(
@@ -50,6 +56,16 @@ export class ProductsService {
       filteredProducts = filteredProducts.filter(
         (product) => parseInt(product.price) > parseInt(productFilters.price),
       );
+    }
+    const user = this.UsersService.getUserById(userId);
+    const subscribeDate = new Date(user.subscribeDate);
+    const today = new Date();
+    const differenceInMs = today.getTime() - subscribeDate.getTime();
+    const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+    if (differenceInDays <= 30) {
+      filteredProducts = filteredProducts.map((product) => {
+        return { ...product, price: (Number(product.price) * 0.95).toString() };
+      });
     }
     return filteredProducts;
   }

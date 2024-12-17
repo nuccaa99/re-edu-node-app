@@ -12,15 +12,22 @@ import {
   Post,
   Put,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './product.service';
 import { CategoryPipes } from './Pipes/Category.pipes';
+import { Permission } from '../products/permissions.guard';
+import { HasUser } from '../guards/hasUser.guard';
 
+@UseGuards(Permission)
 @Controller('products')
 export class ProductsController {
   constructor(private productsService: ProductsService) {}
   @Get()
+  @UseGuards(HasUser)
   getProducts(
+    @Req() request,
     @Query('id', new ParseIntPipe({ optional: true })) id,
     @Query(new CategoryPipes()) productFilters,
     @Query('lang', new DefaultValuePipe('en')) lang,
@@ -28,7 +35,8 @@ export class ProductsController {
     if (id) {
       return this.productsService.getProductById(id, lang);
     }
-    return this.productsService.getAllProducts(productFilters, lang);
+    const userId = request.userId;
+    return this.productsService.getAllProducts(productFilters, lang, userId);
   }
 
   @Get(':id')

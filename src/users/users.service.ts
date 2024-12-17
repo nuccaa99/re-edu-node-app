@@ -12,6 +12,8 @@ export class UsersService {
       email: 'n@gmail.com',
       phoneNumber: '555555555',
       gender: 'F',
+      subscribeDate:
+        'Mon Dec 02 2024 10:30:00 GMT+0400 (Georgia Standard Time)',
     },
     {
       id: 2,
@@ -20,6 +22,8 @@ export class UsersService {
       email: 'nin@gmail.com',
       phoneNumber: '555556555',
       gender: 'F',
+      subscribeDate:
+        'Wed Jan 17 2024 08:45:00 GMT+0400 (Georgia Standard Time)',
     },
   ];
 
@@ -37,6 +41,7 @@ export class UsersService {
 
   addUser(body: AddUserDto) {
     const lastId = this.users[this.users.length - 1]?.id || 0;
+    const date = new Date();
     const newUser = {
       id: lastId + 1,
       firstName: body.firstName,
@@ -44,6 +49,7 @@ export class UsersService {
       email: body.email,
       phoneNumber: body.phoneNumber,
       gender: body.gender,
+      subscribeDate: date.toString(),
     };
     this.users.push(newUser);
     return newUser;

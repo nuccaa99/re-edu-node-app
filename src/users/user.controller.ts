@@ -5,6 +5,7 @@ import {
   Get,
   Post,
   Param,
+  ParseIntPipe,
   Put,
 } from '@nestjs/common';
 
@@ -33,7 +34,7 @@ export class UsersController {
   }
 
   @Put(':id')
-  updateUser(@Param() params, @Body() body) {
+  updateUser(@Param('id', ParseIntPipe) params, @Body() body) {
     return this.usersService.updateUser(Number(params.id), body);
   }
 }

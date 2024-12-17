@@ -16,7 +16,7 @@ export class CategoryPipes implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata) {
     if (value.category) {
       const categories = [
-        'shopping',
+        'electronics',
         'food',
         'fitness',
         'transportation',
