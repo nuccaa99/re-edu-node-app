@@ -7,9 +7,10 @@ import { ProductsModule } from './products/product.module';
 import { DesktopAccessMiddleware } from './middlewares/desktop-access.middleware';
 import { TimeAccessMiddleware } from './middlewares/time-based.middleware';
 import { PermissionMiddleware } from './middlewares/permission.middleware';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
-  imports: [UsersModule, ExpensesModule, ProductsModule],
+  imports: [UsersModule, ExpensesModule, ProductsModule, PostsModule],
   controllers: [AppController],
   providers: [AppService],
 })
