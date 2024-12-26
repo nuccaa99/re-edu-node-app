@@ -18,14 +18,12 @@ import {
 import { ProductsService } from './products.service';
 import { CategoryPipes } from './Pipes/Category.pipes';
 import { Permission } from './permissions.guard';
-import { HasUser } from '../guards/hasUser.guard';
 
 @UseGuards(Permission)
 @Controller('products')
 export class ProductsController {
   constructor(private productsService: ProductsService) {}
   @Get()
-  @UseGuards(HasUser)
   getProducts(
     @Req() request,
     @Query('id', new ParseIntPipe({ optional: true })) id,

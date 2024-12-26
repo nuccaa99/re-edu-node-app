@@ -5,8 +5,11 @@ import { Request, Response, NextFunction } from 'express';
 export class DesktopAccessMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const userAgent = req.headers['user-agent'] || '';
-    console.log(userAgent);
-    if (userAgent.includes('Windows') || userAgent.includes('Macintosh')) {
+    console.log(userAgent, 'useragent');
+    if (
+      (userAgent && userAgent.includes('Windows')) ||
+      userAgent.includes('Macintosh')
+    ) {
       next();
     } else {
       res

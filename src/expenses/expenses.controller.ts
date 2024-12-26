@@ -6,7 +6,10 @@ import {
   Post,
   Param,
   Put,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
+import { HasValidUserId } from '../guards/hasValidUserId.guard';
 
 import { ExpensesService } from './expenses.service';
 
@@ -23,8 +26,10 @@ export class ExpensesController {
     return this.expensesService.getExpenseById(Number(params.id));
   }
   @Post()
-  createExpense(@Body() body) {
-    return this.expensesService.createExpense(body);
+  @UseGuards(HasValidUserId)
+  createExpense(@Body() body, @Req() request) {
+    const userId = request.userId;
+    return this.expensesService.createExpense(body, userId);
   }
 
   @Delete(':id')
