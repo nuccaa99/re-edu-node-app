@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { AddExpenseDto } from './DTOs/add-expense.dto';
-import { UpdateExpenseDto } from './DTOs/update-expense.dto';
+import { CreateExpenseDto } from './dto/create-expense.dto';
+import { UpdateExpenseDto } from './dto/update-expense.dto';
 
 @Injectable()
 export class ExpensesService {
@@ -35,7 +35,7 @@ export class ExpensesService {
     return expense;
   }
 
-  addExpense(body: AddExpenseDto) {
+  createExpense(body: CreateExpenseDto) {
     const lastId = this.expenses[this.expenses.length - 1]?.id || 0;
     const totalPrice = Number(body.price) * Number(body.quantity);
     const newExpense = {

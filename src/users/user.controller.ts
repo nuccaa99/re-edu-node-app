@@ -24,8 +24,8 @@ export class UsersController {
     return this.usersService.getUserById(Number(params.id));
   }
   @Post()
-  addUser(@Body() body) {
-    return this.usersService.addUser(body);
+  createUser(@Body() body) {
+    return this.usersService.createUser(body);
   }
 
   @Delete(':id')

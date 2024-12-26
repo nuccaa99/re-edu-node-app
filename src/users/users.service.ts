@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { AddUserDto } from './DTOs/add-user.dto';
-import { UpdateUserDto } from './DTOs/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -39,7 +39,7 @@ export class UsersService {
     return user;
   }
 
-  addUser(body: AddUserDto) {
+  createUser(body: CreateUserDto) {
     const lastId = this.users[this.users.length - 1]?.id || 0;
     const date = new Date();
     const newUser = {

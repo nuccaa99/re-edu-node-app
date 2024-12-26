@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ExpensesModule } from './expenses/expenses.module';
-import { ProductsModule } from './products/product.module';
+import { ProductsModule } from './products/products.module';
 import { DesktopAccessMiddleware } from './middlewares/desktop-access.middleware';
 import { TimeAccessMiddleware } from './middlewares/time-based.middleware';
 import { PermissionMiddleware } from './middlewares/permission.middleware';

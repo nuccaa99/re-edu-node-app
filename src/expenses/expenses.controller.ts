@@ -23,8 +23,8 @@ export class ExpensesController {
     return this.expensesService.getExpenseById(Number(params.id));
   }
   @Post()
-  addExpense(@Body() body) {
-    return this.expensesService.addExpense(body);
+  createExpense(@Body() body) {
+    return this.expensesService.createExpense(body);
   }
 
   @Delete(':id')

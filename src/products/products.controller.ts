@@ -15,9 +15,9 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ProductsService } from './product.service';
+import { ProductsService } from './products.service';
 import { CategoryPipes } from './Pipes/Category.pipes';
-import { Permission } from '../products/permissions.guard';
+import { Permission } from './permissions.guard';
 import { HasUser } from '../guards/hasUser.guard';
 
 @UseGuards(Permission)
@@ -48,14 +48,14 @@ export class ProductsController {
   }
 
   @Post()
-  addProduct(
+  createProduct(
     @Body() body,
     @Headers() header,
     @Query('lang', new DefaultValuePipe('en')) lang,
   ) {
     if (header.password !== '12345')
       throw new HttpException('Permision not granted', HttpStatus.UNAUTHORIZED);
-    return this.productsService.addProduct(body, lang);
+    return this.productsService.createProduct(body, lang);
   }
 
   @Delete(':id')

@@ -1,4 +1,4 @@
-export class AddExpenseDto {
+export class CreateExpenseDto {
   category: string;
   productName: string;
   quantity: number;

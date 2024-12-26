@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { AddProductDto } from './DTOs/add-product.dto';
-import { UpdateProductDto } from './DTOs/update-product.dto';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -78,7 +78,7 @@ export class ProductsService {
     return product;
   }
 
-  addProduct(body: AddProductDto, lang: 'ka' | 'en') {
+  createProduct(body: CreateProductDto, lang: 'ka' | 'en') {
     if (!body.category || !body.name || !body.price) {
       throw new HttpException('Fields are required', HttpStatus.BAD_REQUEST);
     }

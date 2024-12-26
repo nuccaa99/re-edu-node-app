@@ -6,7 +6,7 @@ export class TimeAccessMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const currentHour = new Date().getHours();
 
-    if (currentHour >= 10 && currentHour < 18) {
+    if (currentHour >= 10 && currentHour < 24) {
       next();
     } else {
       res
