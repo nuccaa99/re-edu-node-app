@@ -9,8 +9,18 @@ import { TimeAccessMiddleware } from './middlewares/time-based.middleware';
 import { PermissionMiddleware } from './middlewares/permission.middleware';
 import { PostsModule } from './posts/posts.module';
 
+import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+
 @Module({
-  imports: [UsersModule, ExpensesModule, ProductsModule, PostsModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.MONGO_URL),
+    UsersModule,
+    ExpensesModule,
+    ProductsModule,
+    PostsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,78 +1,73 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { isValidObjectId, Model } from 'mongoose';
+import { User } from './schema/user.schema';
+import { IUser } from './user.interface';
 
 @Injectable()
 export class UsersService {
-  private users = [
-    {
-      id: 1,
-      firstName: 'nuca',
-      lastName: 'khar',
-      email: 'n@gmail.com',
-      phoneNumber: '555555555',
-      gender: 'F',
-      subscribeDate:
-        'Mon Dec 02 2024 10:30:00 GMT+0400 (Georgia Standard Time)',
-    },
-    {
-      id: 2,
-      firstName: 'nino',
-      lastName: 'khar',
-      email: 'nin@gmail.com',
-      phoneNumber: '555556555',
-      gender: 'F',
-      subscribeDate:
-        'Wed Jan 17 2024 08:45:00 GMT+0400 (Georgia Standard Time)',
-    },
-  ];
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  getAllUsers() {
-    return this.users;
-  }
+  async create(createUserDto: CreateUserDto) {
+    const existingUser = await this.userModel.findOne({
+      email: createUserDto.email,
+    });
+    if (existingUser) throw new BadRequestException('user already exists');
 
-  getUserById(id: number) {
-    const user = this.users.find((el) => el.id === id);
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
+    const user = await this.userModel.create(createUserDto);
     return user;
   }
 
-  createUser(body: CreateUserDto) {
-    const lastId = this.users[this.users.length - 1]?.id || 0;
-    const date = new Date();
-    const newUser = {
-      id: lastId + 1,
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      phoneNumber: body.phoneNumber,
-      gender: body.gender,
-      subscribeDate: date.toString(),
-    };
-    this.users.push(newUser);
-    return newUser;
+  findAll() {
+    return this.userModel.find();
   }
 
-  deleteUser(id: number) {
-    const index = this.users.findIndex((el) => el.id === id);
-    if (index === -1)
-      throw new HttpException('User id is invalid', HttpStatus.BAD_REQUEST);
-    const deletedUser = this.users.splice(index, 1);
-    return deletedUser;
+  async findOne(id: string): Promise<IUser | {}> {
+    if (!isValidObjectId(id))
+      throw new BadRequestException('not valid id was provided');
+    const user = (await this.userModel.findById(id)).populate({
+      path: 'expenses',
+      select: '-user',
+    });
+    return user || {};
   }
 
-  updateUser(id: number, body: UpdateUserDto) {
-    const index = this.users.findIndex((el) => el.id === id);
-    if (index === -1) {
-      throw new HttpException('User id is invalid', HttpStatus.BAD_REQUEST);
-    }
-    const updatedUser = {
-      ...this.users[index],
-      ...body,
-    };
-    this.users[index] = updatedUser;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    if (!isValidObjectId(id))
+      throw new BadGatewayException('not valid id was provided');
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      updateUserDto,
+      { new: true },
+    );
+    return { message: 'user updated successfully', data: updatedUser };
+  }
+
+  async remove(id: string) {
+    if (!isValidObjectId(id))
+      throw new BadGatewayException('not valid id was provided');
+    const user = await this.userModel.findByIdAndDelete(id);
+    return { message: 'user deleted successfully', data: user };
+  }
+
+  async addExpenseId(userId, expenseId) {
+    const user = await this.userModel.findById(userId);
+    if (!user) throw new BadRequestException('user not found');
+    const expenses = user.expenses;
+    expenses.push(expenseId);
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      userId,
+      { ...user, expenses },
+      {
+        new: true,
+      },
+    );
     return updatedUser;
   }
 }

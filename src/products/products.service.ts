@@ -57,16 +57,16 @@ export class ProductsService {
         (product) => parseInt(product.price) > parseInt(productFilters.price),
       );
     }
-    const user = this.UsersService.getUserById(userId);
-    const subscribeDate = new Date(user.subscribeDate);
-    const today = new Date();
-    const differenceInMs = today.getTime() - subscribeDate.getTime();
-    const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
-    if (differenceInDays <= 30) {
-      filteredProducts = filteredProducts.map((product) => {
-        return { ...product, price: (Number(product.price) * 0.95).toString() };
-      });
-    }
+    // const user = this.UsersService.getUserById(userId);
+    // const subscribeDate = new Date(user.subscribeDate);
+    // const today = new Date();
+    // const differenceInMs = today.getTime() - subscribeDate.getTime();
+    // const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+    // if (differenceInDays <= 30) {
+    //   filteredProducts = filteredProducts.map((product) => {
+    //     return { ...product, price: (Number(product.price) * 0.95).toString() };
+    //   });
+    // }
     return filteredProducts;
   }
 

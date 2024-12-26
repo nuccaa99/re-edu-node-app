@@ -1,84 +1,45 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { UsersService } from '../users/users.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Expense } from './schema/expense.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class ExpensesService {
-  constructor(private UsersService: UsersService) {}
-  private expenses = [
-    {
-      id: 1,
-      category: 'Food',
-      productName: 'chicken',
-      quantity: 3,
-      price: 5,
-      totalPrice: 15,
-    },
-    {
-      id: 2,
-      category: 'Makeup',
-      productName: 'Eyelash glue',
-      quantity: 1,
-      price: 10,
-      totalPrice: 10,
-    },
-  ];
+  constructor(
+    @InjectModel(Expense.name) private expenseModel: Model<Expense>,
+    private UsersService: UsersService,
+  ) {}
 
-  getAllExpenses() {
-    return this.expenses;
-  }
-
-  getExpenseById(id: number) {
-    const expense = this.expenses.find((el) => el.id === id);
-    if (!expense) {
-      throw new HttpException('Expense not found', HttpStatus.NOT_FOUND);
+  async create(userId: string, createExpenseDto: CreateExpenseDto) {
+    const user = await this.UsersService.findOne(userId);
+    if (!Object.keys(user).length)
+      throw new BadRequestException('user not found');
+    if ('_id' in user) {
+      const expense = await this.expenseModel.create({
+        ...createExpenseDto,
+        user: user._id,
+      });
+      await this.UsersService.addExpenseId(user._id, expense._id);
+      return expense;
     }
-    return expense;
   }
 
-  async createExpense(body: CreateExpenseDto, userId) {
-    const lastId = this.expenses[this.expenses.length - 1]?.id || 0;
-    const totalPrice = Number(body.price) * Number(body.quantity);
-
-    const newExpense = {
-      id: lastId + 1,
-      category: body.category,
-      productName: body.productName,
-      quantity: body.quantity,
-      price: body.price,
-      totalPrice,
-      user: userId,
-    };
-    this.expenses.push(newExpense);
-    return newExpense;
+  findAll() {
+    return this.expenseModel.find().populate('user');
   }
 
-  deleteExpense(id: number) {
-    const index = this.expenses.findIndex((el) => el.id === id);
-    if (index === -1)
-      throw new HttpException('Expense id is invalid', HttpStatus.BAD_REQUEST);
-    const deletedExpense = this.expenses.splice(index, 1);
-    return deletedExpense;
+  findOne(id: number) {
+    return `This action returns a #${id} post`;
   }
 
-  updateExpense(id: number, body: UpdateExpenseDto) {
-    const index = this.expenses.findIndex((el) => el.id === id);
-    if (index === -1) {
-      throw new HttpException('Expense id is invalid', HttpStatus.BAD_REQUEST);
-    }
-    const updatedExpense = {
-      ...this.expenses[index],
-      ...body,
-    };
-    const updatedTotal =
-      Number(updatedExpense.price) * Number(updatedExpense.quantity);
-    const updatedExpenseWithTotal = {
-      ...updatedExpense,
-      totalPrice: updatedTotal,
-    };
+  update(id: number, updateExpenseDto: UpdateExpenseDto) {
+    return `This action updates a #${id} post`;
+  }
 
-    this.expenses[index] = updatedExpenseWithTotal;
-    return updatedExpenseWithTotal;
+  remove(id: number) {
+    return `This action removes a #${id} post`;
   }
 }
