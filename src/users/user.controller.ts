@@ -3,7 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  Post,
+  // Post,
   Param,
   Patch,
   Query,
@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+// import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryParamsDto } from './dto/queryParams.dto';
 import { QueryParamsAgeDto } from './dto/queryParamsAge.dto';
@@ -20,10 +20,10 @@ import { QueryParamsAgeDto } from './dto/queryParamsAge.dto';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
+  // @Post()
+  // create(@Body() createUserDto: CreateUserDto) {
+  //   return this.usersService.create(createUserDto);
+  // }
 
   @Get()
   findAll(@Query() queryParams: QueryParamsDto) {
@@ -48,10 +48,10 @@ export class UsersController {
     return this.usersService.getUsersByAge(age, query);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.usersService.findOne(id);
+  // }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {

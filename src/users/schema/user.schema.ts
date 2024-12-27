@@ -15,6 +15,8 @@ export class User {
   phoneNumber: string;
   @Prop({ Type: String })
   gender: string;
+  @Prop({ type: String, select: false })
+  password: string;
   @Prop({
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'Expense',

@@ -1,3 +1,4 @@
+export class CreateAuthDto {}
 import {
   IsEmail,
   IsNotEmpty,
@@ -5,7 +6,7 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-export class CreateUserDto {
+export class SignUpDto {
   @IsNotEmpty()
   @IsString()
   firstName: string;
@@ -13,10 +14,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   lastName: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  age: number;
 
   @IsNotEmpty()
   @IsEmail()
@@ -29,6 +26,10 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   gender: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  age: number;
 
   @IsNotEmpty()
   @IsString()
