@@ -4,6 +4,7 @@ export class IUser {
   _id: mongoose.Schema.Types.ObjectId;
   firstName: string;
   lastName: string;
+  age: number;
   email: string;
   phoneNumber: string;
   gender: string;

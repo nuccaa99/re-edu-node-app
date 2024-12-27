@@ -2,6 +2,7 @@ import {
   BadGatewayException,
   BadRequestException,
   Injectable,
+  OnModuleInit,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,10 +10,32 @@ import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
 import { User } from './schema/user.schema';
 import { IUser } from './user.interface';
+import { QueryParamsDto } from './dto/queryParams.dto';
+import { faker } from '@faker-js/faker';
+import { QueryParamsAgeDto } from './dto/queryParamsAge.dto';
 
 @Injectable()
-export class UsersService {
+export class UsersService implements OnModuleInit {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+
+  async onModuleInit() {
+    const users = await this.userModel.countDocuments();
+    if (users === 0) {
+      const users = [];
+      for (let i = 0; i < 30_000; i++) {
+        const user = {
+          firstName: faker.person.firstName(),
+          lastName: faker.person.lastName(),
+          age: faker.number.int({ min: 18, max: 99 }),
+          email: faker.internet.email(),
+          phoneNumber: faker.phone.number(),
+          gender: faker.person.gender(),
+        };
+        users.push(user);
+      }
+      await this.userModel.insertMany(users);
+    }
+  }
 
   async create(createUserDto: CreateUserDto) {
     const existingUser = await this.userModel.findOne({
@@ -24,8 +47,26 @@ export class UsersService {
     return user;
   }
 
-  findAll() {
-    return this.userModel.find();
+  findAll(queryParams: QueryParamsDto) {
+    const { page, take } = queryParams;
+    const limit = Math.min(take, 50);
+    return this.userModel
+      .find()
+      .skip((page - 1) * take)
+      .limit(page * limit);
+  }
+
+  async getUsersQuantity() {
+    const count = await this.userModel.countDocuments();
+    return count;
+  }
+
+  async getUsersByAge(age: number, query: QueryParamsAgeDto) {
+    const { ageFrom, ageTo } = query;
+    const filter =
+      ageFrom && ageTo ? { age: { $gte: ageFrom, $lte: ageTo } } : { age };
+
+    return this.userModel.find(filter).limit(100);
   }
 
   async findOne(id: string): Promise<IUser | {}> {
@@ -54,6 +95,11 @@ export class UsersService {
       throw new BadGatewayException('not valid id was provided');
     const user = await this.userModel.findByIdAndDelete(id);
     return { message: 'user deleted successfully', data: user };
+  }
+
+  async removeall() {
+    const user = await this.userModel.deleteMany();
+    return user;
   }
 
   async addExpenseId(userId, expenseId) {

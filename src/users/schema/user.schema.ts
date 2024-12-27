@@ -7,6 +7,8 @@ export class User {
   firstName: string;
   @Prop({ Type: String })
   lastName: string;
+  @Prop({ Type: Number })
+  age: number;
   @Prop({ Type: String })
   email: string;
   @Prop({ Type: String })
