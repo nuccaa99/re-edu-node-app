@@ -13,6 +13,7 @@ import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { ExpensesService } from './expenses.service';
 import { HasValidUserId } from './hasValidUserId.guard';
+import { IsAdminGuard } from 'src/guards/idAdmin.guard';
 
 @Controller('expenses')
 export class ExpensesController {
@@ -41,6 +42,7 @@ export class ExpensesController {
   }
 
   @Delete(':id')
+  @UseGuards(IsAdminGuard)
   remove(@Param('id') id: string) {
     return this.expensesService.remove(+id);
   }

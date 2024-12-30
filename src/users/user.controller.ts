@@ -8,6 +8,7 @@ import {
   Patch,
   Query,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
@@ -15,6 +16,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryParamsDto } from './dto/queryParams.dto';
 import { QueryParamsAgeDto } from './dto/queryParamsAge.dto';
+import { IsAdminGuard } from 'src/guards/idAdmin.guard';
 
 @Controller('users')
 export class UsersController {
@@ -59,6 +61,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(IsAdminGuard)
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }

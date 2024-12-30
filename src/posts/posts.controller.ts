@@ -14,6 +14,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { AuthGuard } from './auth.guard';
 import { HasValidUserId } from 'src/expenses/hasValidUserId.guard';
+import { IsAdminGuard } from 'src/guards/idAdmin.guard';
 
 @Controller('posts')
 @UseGuards(AuthGuard)
@@ -43,6 +44,7 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @UseGuards(IsAdminGuard)
   remove(@Param('id') id: string) {
     return this.postsService.remove(+id);
   }
