@@ -21,6 +21,14 @@ export class User {
     default: [],
   })
   expenses: mongoose.Schema.Types.ObjectId[];
+  @Prop({
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Post',
+    default: [],
+  })
+  posts: mongoose.Schema.Types.ObjectId[];
+  @Prop({ required: true, enum: ['user', 'admin'], default: 'user' })
+  role: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

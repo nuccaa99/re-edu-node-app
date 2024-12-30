@@ -1,62 +1,45 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Post } from './schema/post.schema';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class PostsService {
-  private posts = [
-    {
-      id: 1,
-      title: 'title1',
-      content: 'random content 1',
-      userEmail: 'n@gmail.com',
-    },
-    {
-      id: 2,
-      title: 'title2',
-      content: 'random content 2',
-      userEmail: 'n@gmail.com',
-    },
-  ];
-  create(createPostDto: CreatePostDto) {
-    const lastId = this.posts[length - 1]?.id || 0;
-    const newPost = {
-      id: lastId + 1,
-      title: createPostDto.title,
-      content: createPostDto.content,
-      userEmail: 'test@gmail.com',
-    };
-    this.posts.push(newPost);
-    return { message: 'created successfully', data: newPost };
+  constructor(
+    @InjectModel(Post.name) private postModel: Model<Post>,
+    private UsersService: UsersService,
+  ) {}
+
+  async create(userId: string, createPostDto: CreatePostDto) {
+    const user = await this.UsersService.findOne(userId);
+    if (!Object.keys(user).length)
+      throw new BadRequestException('user not found');
+    if ('_id' in user) {
+      const post = await this.postModel.create({
+        ...createPostDto,
+        user: user._id,
+      });
+      await this.UsersService.addPostId(user._id, post._id);
+      return post;
+    }
   }
 
   findAll() {
-    return this.posts;
+    return this.postModel.find().populate('user');
   }
 
   findOne(id: number) {
-    const post = this.posts.find((el) => el.id === id);
-    if (!post) return [];
-    return post;
+    return `This action returns a #${id} post`;
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    const index = this.posts.findIndex((el) => el.id === id);
-    if (index === -1) {
-      throw new BadRequestException('post could not be deleted');
-    }
-    if (updatePostDto.title) this.posts[index].title = updatePostDto.title;
-    if (updatePostDto.content)
-      this.posts[index].content = updatePostDto.content;
-    return { message: 'updated successfully', data: this.posts[index] };
+  update(id: number, UpdatePostDto: UpdatePostDto) {
+    return `This action updates a #${id} post`;
   }
 
   remove(id: number) {
-    const index = this.posts.findIndex((el) => el.id === id);
-    if (index === -1) {
-      throw new BadRequestException('post could not be deleted');
-    }
-    const deletedPost = this.posts.splice(index, 1);
-    return { message: 'deletedSuccessfully', data: deletedPost };
+    return `This action removes a #${id} post`;
   }
 }

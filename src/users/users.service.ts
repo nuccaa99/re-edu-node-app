@@ -13,10 +13,16 @@ import { IUser } from './user.interface';
 import { QueryParamsDto } from './dto/queryParams.dto';
 import { faker } from '@faker-js/faker';
 import { QueryParamsAgeDto } from './dto/queryParamsAge.dto';
+import { Post } from 'src/posts/schema/post.schema';
+import { Expense } from 'src/expenses/schema/expense.schema';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Post.name) private postModel: Model<Post>,
+    @InjectModel(Expense.name) private expenseModel: Model<Expense>,
+  ) {}
 
   async onModuleInit() {
     const users = await this.userModel.countDocuments();
@@ -69,13 +75,19 @@ export class UsersService implements OnModuleInit {
     return this.userModel.find(filter).limit(100);
   }
 
-  async findOne(id: string): Promise<IUser | {}> {
+  async findOne(id: string): Promise<IUser | object> {
     if (!isValidObjectId(id))
       throw new BadRequestException('not valid id was provided');
-    const user = (await this.userModel.findById(id)).populate({
-      path: 'expenses',
-      select: '-user',
-    });
+    const user = (await this.userModel.findById(id)).populate([
+      {
+        path: 'expenses',
+        select: '-user',
+      },
+      {
+        path: 'posts',
+        select: '-user',
+      },
+    ]);
     return user || {};
   }
 
@@ -93,8 +105,16 @@ export class UsersService implements OnModuleInit {
   async remove(id: string) {
     if (!isValidObjectId(id))
       throw new BadGatewayException('not valid id was provided');
-    const user = await this.userModel.findByIdAndDelete(id);
-    return { message: 'user deleted successfully', data: user };
+    const user = await this.userModel.findById(id);
+    const deletedUser = await this.userModel.findByIdAndDelete(id);
+    const { posts, expenses } = user;
+    if (posts?.length) {
+      await this.postModel.deleteMany({ _id: { $in: posts } });
+    }
+    if (expenses?.length) {
+      await this.expenseModel.deleteMany({ _id: { $in: expenses } });
+    }
+    return { message: 'user deleted successfully', data: deletedUser };
   }
 
   async removeall() {
@@ -110,6 +130,21 @@ export class UsersService implements OnModuleInit {
     const updatedUser = await this.userModel.findByIdAndUpdate(
       userId,
       { ...user, expenses },
+      {
+        new: true,
+      },
+    );
+    return updatedUser;
+  }
+
+  async addPostId(userId, postId) {
+    const user = await this.userModel.findById(userId);
+    if (!user) throw new BadRequestException('user not found');
+    const posts = user.posts;
+    posts.push(postId);
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      userId,
+      { ...user, posts },
       {
         new: true,
       },

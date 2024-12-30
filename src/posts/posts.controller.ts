@@ -7,11 +7,13 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { AuthGuard } from './auth.guard';
+import { HasValidUserId } from 'src/expenses/hasValidUserId.guard';
 
 @Controller('posts')
 @UseGuards(AuthGuard)
@@ -19,8 +21,10 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+  @UseGuards(HasValidUserId)
+  create(@Req() request, @Body() createPostDto: CreatePostDto) {
+    const userId = request.userId;
+    return this.postsService.create(userId, createPostDto);
   }
 
   @Get()
