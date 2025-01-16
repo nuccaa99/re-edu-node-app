@@ -10,7 +10,7 @@ import {
   ParseIntPipe,
   UseGuards,
 } from '@nestjs/common';
-
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -59,7 +59,7 @@ export class UsersController {
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
-
+  @ApiBearerAuth()
   @Delete(':id')
   @UseGuards(IsAdminGuard)
   remove(@Param('id') id: string) {
