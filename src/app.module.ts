@@ -10,6 +10,8 @@ import { PostsModule } from './posts/posts.module';
 
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { BlaModule } from './bla/bla.module';
+import { BlblModule } from './blbl/blbl.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     ExpensesModule,
     ProductsModule,
     PostsModule,
+    BlaModule,
+    BlblModule,
   ],
   controllers: [AppController],
   providers: [AppService],

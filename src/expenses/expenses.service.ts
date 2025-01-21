@@ -35,6 +35,7 @@ export class ExpensesService {
     return `This action returns a #${id} post`;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(id: number, updateExpenseDto: UpdateExpenseDto) {
     return `This action updates a #${id} post`;
   }
