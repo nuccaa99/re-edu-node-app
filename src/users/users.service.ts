@@ -13,8 +13,8 @@ import { IUser } from './user.interface';
 import { QueryParamsDto } from './dto/queryParams.dto';
 import { faker } from '@faker-js/faker';
 import { QueryParamsAgeDto } from './dto/queryParamsAge.dto';
-import { Post } from 'src/posts/schema/post.schema';
-import { Expense } from 'src/expenses/schema/expense.schema';
+import { Post } from '../posts/schema/post.schema';
+import { Expense } from '../expenses/schema/expense.schema';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
