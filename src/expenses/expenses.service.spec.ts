@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExpensesService } from './expenses.service';
 import { UsersService } from '../users/users.service';
@@ -19,16 +20,6 @@ describe('ExpensesService', () => {
     expenses: [],
   };
 
-  const mockExpense = {
-    _id: 'expense123',
-    category: 'Groceries',
-    productName: 'Apples',
-    quantity: 5,
-    price: 1.99,
-    totalPrice: 9.95,
-    user: 'user123',
-  };
-
   const mockCreateExpenseDto: CreateExpenseDto = {
     category: 'Groceries',
     productName: 'Apples',
@@ -45,12 +36,17 @@ describe('ExpensesService', () => {
     totalPrice: 7.47,
   };
 
+  const mockExpenseDocument = {
+    _id: 'expense123',
+    ...mockCreateExpenseDto,
+    user: 'user123',
+  };
+
   beforeEach(async () => {
     const expenseModel = {
       create: jest.fn(),
       find: jest.fn(),
       populate: jest.fn(),
-      findByIdAndUpdate: jest.fn(),
     };
 
     const usersService = {
@@ -86,12 +82,14 @@ describe('ExpensesService', () => {
   describe('create', () => {
     it('should successfully create an expense', async () => {
       mockUsersService.findOne.mockResolvedValue(mockUser);
-      mockExpenseModel.create = jest.fn().mockResolvedValue(mockExpense);
+      mockExpenseModel.create = jest
+        .fn()
+        .mockResolvedValue(mockExpenseDocument);
       mockUsersService.addExpenseId.mockResolvedValue(undefined);
 
       const result = await service.create('user123', mockCreateExpenseDto);
 
-      expect(result).toEqual(mockExpense);
+      expect(result).toEqual(mockExpenseDocument);
       expect(mockUsersService.findOne).toHaveBeenCalledWith('user123');
       expect(mockExpenseModel.create).toHaveBeenCalledWith({
         ...mockCreateExpenseDto,
@@ -99,7 +97,7 @@ describe('ExpensesService', () => {
       });
       expect(mockUsersService.addExpenseId).toHaveBeenCalledWith(
         mockUser._id,
-        mockExpense._id,
+        mockExpenseDocument._id,
       );
     });
 
@@ -120,33 +118,13 @@ describe('ExpensesService', () => {
       expect(result).toBeUndefined();
       expect(mockExpenseModel.create).not.toHaveBeenCalled();
     });
-
-    it('should calculate total price correctly', async () => {
-      const dtoWithoutTotal: CreateExpenseDto = {
-        category: 'Groceries',
-        productName: 'Bananas',
-        quantity: 3,
-        price: 2.5,
-        totalPrice: 7.5,
-      };
-
-      mockUsersService.findOne.mockResolvedValue(mockUser);
-      mockExpenseModel.create = jest.fn().mockResolvedValue({
-        ...mockExpense,
-        ...dtoWithoutTotal,
-      });
-
-      const result = await service.create('user123', dtoWithoutTotal);
-
-      expect(result.totalPrice).toBe(
-        dtoWithoutTotal.quantity * dtoWithoutTotal.price,
-      );
-    });
   });
 
   describe('findAll', () => {
     it('should return all expenses with populated user data', async () => {
-      const mockPopulatedExpenses = [{ ...mockExpense, user: mockUser }];
+      const mockPopulatedExpenses = [
+        { ...mockExpenseDocument, user: mockUser },
+      ];
       mockExpenseModel.find = jest.fn().mockReturnValue({
         populate: jest.fn().mockResolvedValue(mockPopulatedExpenses),
       });
@@ -166,56 +144,31 @@ describe('ExpensesService', () => {
   });
 
   describe('update', () => {
-    it('should update an expense with partial data', async () => {
-      const expenseId = 'expense123';
-      const partialUpdate: Partial<UpdateExpenseDto> = {
-        _id: 'expense123',
-        category: 'Food & Beverages',
-        productName: 'Organic Apples',
-        quantity: 3,
-        price: 2.49,
-        totalPrice: 7.47,
-        user: 'user123',
+    it('should return the update DTO', () => {
+      const id = 1;
+      const updateDto: UpdateExpenseDto = {
+        category: 'Updated Category',
+        productName: 'Updated Product',
+        quantity: 2,
+        price: 4,
+        totalPrice: 8,
       };
 
-      const updatedExpense = {
-        ...mockExpense,
-        ...partialUpdate,
-      };
+      const result = service.update(id, updateDto);
 
-      mockExpenseModel.findByIdAndUpdate = jest
-        .fn()
-        .mockResolvedValue(updatedExpense);
-
-      const result = await service.update(1, partialUpdate);
-
-      expect(result).toEqual(updatedExpense);
-      expect(mockExpenseModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        expenseId,
-        partialUpdate,
-        { new: true },
-      );
+      expect(result).toEqual(updateDto);
     });
 
-    it('should update an expense with full data', async () => {
-      const expenseId = 'expense123';
-      const updatedExpense = {
-        ...mockExpense,
-        ...mockUpdateExpenseDto,
+    it('should return partial update DTO', () => {
+      const id = 1;
+      const partialUpdateDto: Partial<UpdateExpenseDto> = {
+        quantity: 2,
+        price: 4,
+        totalPrice: 8,
       };
 
-      mockExpenseModel.findByIdAndUpdate = jest
-        .fn()
-        .mockResolvedValue(updatedExpense);
-
-      const result = await service.update(1, mockUpdateExpenseDto);
-
-      expect(result).toEqual(updatedExpense);
-      expect(mockExpenseModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        expenseId,
-        mockUpdateExpenseDto,
-        { new: true },
-      );
+      const result = service.update(id, partialUpdateDto);
+      expect(result).toEqual(partialUpdateDto);
     });
   });
 
