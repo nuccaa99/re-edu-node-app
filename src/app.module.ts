@@ -12,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BlaModule } from './bla/bla.module';
 import { BlblModule } from './blbl/blbl.module';
+import { AwsS3Module } from './aws-s3/aws-s3.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { BlblModule } from './blbl/blbl.module';
     PostsModule,
     BlaModule,
     BlblModule,
+    AwsS3Module,
   ],
   controllers: [AppController],
   providers: [AppService],
