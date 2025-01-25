@@ -15,10 +15,11 @@ import { faker } from '@faker-js/faker';
 import { QueryParamsAgeDto } from './dto/queryParamsAge.dto';
 import { Post } from '../posts/schema/post.schema';
 import { Expense } from '../expenses/schema/expense.schema';
-
+import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 @Injectable()
 export class UsersService implements OnModuleInit {
   constructor(
+    private awsS3Service: AwsS3Service,
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Post.name) private postModel: Model<Post>,
     @InjectModel(Expense.name) private expenseModel: Model<Expense>,
@@ -150,5 +151,17 @@ export class UsersService implements OnModuleInit {
       },
     );
     return updatedUser;
+  }
+
+  uploadImage(filePath, file) {
+    return this.awsS3Service.uploadImage(filePath, file);
+  }
+
+  getImage(fileId) {
+    return this.awsS3Service.getImageByFileId(fileId);
+  }
+
+  deleteImage(fileId) {
+    return this.awsS3Service.deleteImageByFileId(fileId);
   }
 }

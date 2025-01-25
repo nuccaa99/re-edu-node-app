@@ -8,4 +8,5 @@ export class IUser {
   email: string;
   phoneNumber: string;
   gender: string;
+  avatar: any;
 }

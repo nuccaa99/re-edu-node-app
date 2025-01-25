@@ -49,4 +49,10 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   gender: string;
+  @ApiProperty({
+    example: 'image/1234567890',
+  })
+  @IsNotEmpty()
+  @IsString()
+  avatar: string;
 }

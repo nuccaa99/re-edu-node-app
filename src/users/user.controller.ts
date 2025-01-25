@@ -23,6 +23,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryParamsDto } from './dto/queryParams.dto';
 import { QueryParamsAgeDto } from './dto/queryParamsAge.dto';
 import { IsAdminGuard } from 'src/guards/idAdmin.guard';
+// import { AuthGuard } from 'src/posts/auth.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -133,5 +134,10 @@ export class UsersController {
   })
   removeall() {
     return this.usersService.removeall();
+  }
+
+  @Post('/deleteImage')
+  deleteImage(@Body('fileId') fileId: string) {
+    return this.usersService.deleteImage(fileId);
   }
 }
