@@ -15,7 +15,6 @@ export class HasValidUserId implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const headers = request.headers;
-    console.log(headers['user-id']);
     if (!headers['user-id']) {
       throw new BadRequestException('user id is not provided');
     }

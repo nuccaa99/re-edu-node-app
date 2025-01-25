@@ -44,6 +44,15 @@ export class UsersService implements OnModuleInit {
     }
   }
 
+  async createUser(body) {
+    const existUser = await this.userModel.findOne({
+      email: body.email,
+    });
+    if (existUser) throw new BadGatewayException('user already exists');
+    const user = await this.userModel.create(body);
+    return user;
+  }
+
   async create(createUserDto: CreateUserDto) {
     const existingUser = await this.userModel.findOne({
       email: createUserDto.email,
@@ -74,6 +83,11 @@ export class UsersService implements OnModuleInit {
       ageFrom && ageTo ? { age: { $gte: ageFrom, $lte: ageTo } } : { age };
 
     return this.userModel.find(filter).limit(100);
+  }
+
+  async findOneByEmail(email: string) {
+    const user = await this.userModel.findOne({ email }).select('+password');
+    return user;
   }
 
   async findOne(id: string): Promise<IUser | object> {
