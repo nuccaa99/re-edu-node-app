@@ -13,7 +13,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {
-    console.log('JWT_SECRET:', this.configService.get('JWT_SECRET'));
+    // console.log('JWT_SECRET:', this.configService.get('JWT_SECRET'));
   }
 
   async signUp(signUpDto: SignUpDto) {

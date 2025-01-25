@@ -85,6 +85,16 @@ export class UsersService implements OnModuleInit {
     return this.userModel.find(filter).limit(100);
   }
 
+  async getUserById(id) {
+    if (!isValidObjectId(id))
+      throw new BadGatewayException('Not valid id is provided');
+
+    const user = await this.userModel.findById(id);
+    const avatar = user.avatar ? await this.getImage(user.avatar) : null;
+
+    return { ...user.toObject(), avatar };
+  }
+
   async findOneByEmail(email: string) {
     const user = await this.userModel.findOne({ email }).select('+password');
     return user;

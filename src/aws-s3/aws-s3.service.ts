@@ -56,6 +56,7 @@ export class AwsS3Service {
   }
 
   async deleteImageByFileId(fileId: string) {
+    console.log(fileId, 'fileId');
     if (!fileId) throw new BadRequestException('File id is missing');
     const config = {
       Bucket: this.bucketName,
