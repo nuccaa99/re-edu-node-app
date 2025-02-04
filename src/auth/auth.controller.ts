@@ -9,8 +9,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignUpDto } from './DTO/sign-up.dto';
-import { SignInDto } from './DTO/sign-in.dto';
+import { SignUpDto } from './dto/sign-up.dto';
+import { SignInDto } from './dto/sign-in.dto';
 import { AuthGuard } from './auth.guard';
 import { UsersService } from 'src/users/users.service';
 import {

@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProductsService } from './products.service';
-import { CategoryPipes } from './Pipes/Category.pipes';
+import { CategoryPipes } from './pipes/Category.pipes';
 
 @ApiTags('Products')
 @Controller('products')
